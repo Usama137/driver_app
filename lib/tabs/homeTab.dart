@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:driverapp/components/rounded_button.dart';
+import 'package:driverapp/helpers/pushNotificationService.dart';
 import 'package:driverapp/widgets/confirmSheet.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,16 +32,28 @@ class _HomeTabState extends State<HomeTab> {
 
   bool isAvailable=false;
 
-
   void getCurrentPosition()async{
-    Position position=await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+    //Position position=await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+    Position position =await Geolocator.getCurrentPosition(desiredAccuracy:LocationAccuracy.bestForNavigation );
     currentPosition=position;
     LatLng pos=LatLng(position.latitude, position.longitude);
     mapController.animateCamera(CameraUpdate.newLatLng(pos));
   }
 
+  void getCurrentDriverInfo ()  async{
+    currentFirebaseUser=await FirebaseAuth.instance.currentUser;
+    PushNotificationService pushNotificationService=PushNotificationService();
+    pushNotificationService.initialize();
+    pushNotificationService.getToken();
+  }
 
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCurrentDriverInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +157,7 @@ class _HomeTabState extends State<HomeTab> {
 
   void getLocationUpdates(){
 
-    homeTabPositionStream=geoLocator.getPositionStream(locationOptions).listen((Position position) {
+    homeTabPositionStream=Geolocator.getPositionStream().listen((Position position) {
         currentPosition=position;
 
         if(isAvailable){
