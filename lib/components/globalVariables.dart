@@ -12,7 +12,7 @@ final CameraPosition googlePlex = CameraPosition(
   zoom: 14.4746,
 );
 
-String mapKey='AIzaSyBBdMTXGcPdWKJbiQBCe5-SKIOKGeDlWdo';
+String mapKey='';
 
 DatabaseReference tripReqRef;
 StreamSubscription<Position> homeTabPositionStream;
